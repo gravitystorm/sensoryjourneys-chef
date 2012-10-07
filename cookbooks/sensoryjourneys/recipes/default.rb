@@ -68,7 +68,7 @@ script "install pear modules" do
   code <<-EOH
     pear install Crypt_HMAC HTTP_Request DB Crypt_HMAC2 MDB2 MDB2#pgsql
   EOH
-  not_if test -f "/usr/share/php/Crypt/HMAC2.php"
+  not_if "test -f /usr/share/php/Crypt/HMAC2.php"
 end
 
 
