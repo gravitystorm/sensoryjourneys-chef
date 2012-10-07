@@ -6,7 +6,7 @@ are very welcome.
 
 This is designed to use chef-solo. First we need to grab this repository and
 prep the cookbooks, then install chef-solo, then chef can take care of the rest.
-The base system is ubuntu-server 11.04 so there's not much installed already.
+The base system is ubuntu-server 12.04 minimal so there's not much installed already.
 
     $ sudo apt-get install git
     $ git clone https://github.com/gravitystorm/sensoryjourneys-chef.git

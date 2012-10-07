@@ -17,7 +17,7 @@ service "postgresql" do
   action :enable
 end
 
-%w( ruby1.8 rdoc1.8 ri1.8 ruby irb libxml2-dev ruby1.8-dev apache2-threaded-dev libmagick9-dev build-essential libopenssl-ruby apache2 libxml-ruby ).each do |p|
+%w( ruby1.8 rdoc1.8 ri1.8 ruby irb libxml2-dev ruby1.8-dev apache2-threaded-dev libmagick-dev build-essential libopenssl-ruby apache2 libxml-ruby ).each do |p|
   package p
 end
 
