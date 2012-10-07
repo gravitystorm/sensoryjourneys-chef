@@ -28,14 +28,17 @@ end
 gem_package "rails" do
   version '2.3.8'
   action :install
+  gem_binary '/usr/bin/gem'
 end
 
 gem_package "pg" do
   action :install
+  gem_binary '/usr/bin/gem'
 end
 
 gem_package "libxml-ruby" do
   action :install
+  gem_binary '/usr/bin/gem'
 end
 
 include_recipe 'passenger-gem'
