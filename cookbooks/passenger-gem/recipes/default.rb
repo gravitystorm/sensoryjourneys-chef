@@ -19,6 +19,7 @@ end
 gem_package "passenger" do
   action :install
   version '3.0.13'
+  gem_binary '/usr/bin/gem'
 end
 
 script "install the passenger module" do
