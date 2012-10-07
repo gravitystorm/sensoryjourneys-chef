@@ -43,6 +43,79 @@ end
 
 include_recipe 'passenger-gem'
 
+user "sensory" do
+  action :create
+  shell "/bin/bash"
+end
+
+# Create the database user. For now, it's a superuser.
+script "create sensory db user" do
+  interpreter "bash"
+  user "postgres"
+  group "postgres"
+  cwd "/var/lib/postgresql"
+  code <<-EOH
+    createuser sensory -s
+  EOH
+  not_if %q{test -n "`sudo -u postgres psql template1 -A -t -c '\du sensory'`"} # Mmm, hacky
+end
+
+script "create databases" do
+  user "postgres"
+  group "postgres"
+  interpreter "bash"
+  cwd "/var/lib/postgresql"
+  code <<-EOH
+    createdb -E UTF8 -O sensory sensory_prod
+    createdb -E UTF8 -O sensory paperwalking
+  EOH
+  not_if %q{test -n "`sudo -u postgres psql template1 -A -t -c '\l' | grep sensory_prod`"}
+end
+
+deploy_dir = "/var/www/sensory"
+shared_dir = File.join(deploy_dir, "shared")
+
+[deploy_dir, File.join(shared_dir, "config"), File.join(shared_dir, "log")].each do |dir|
+  directory dir do
+    owner "sensory"
+    group "sensory"
+    recursive true
+  end
+end
+
+deploy_revision deploy_dir do
+  repo "https://github.com/gravitystorm/Sensory-Journeys.git"
+  revision "master"
+  user "sensory"
+  group "sensory"
+
+  before_migrate do
+    current_release_directory = release_path
+    shared_directory = new_resource.shared_path
+    running_deploy_user = new_resource.user
+
+    script 'Create the database' do
+      interpreter "bash"
+      cwd current_release_directory
+      user running_deploy_user
+      environment 'RAILS_ENV' => 'production'
+      code <<-EOH
+        rake db:create
+        psql -U sensory -h localhost -f wp/site/doc/create.postgres paperwalking
+      EOH
+      not_if %q{test -n "`sudo -u postgres psql template1 -A -t -c '\l' | grep sensory_prod`"}
+    end
+  end
+
+  migrate true
+  migration_command "rake db:migrate"
+  environment "RAILS_ENV" => "production"
+  action :deploy
+  restart_command "touch tmp/restart.txt"
+end
+
+
+
 # Go into the project source code, and set up the database configuration
 # 
 # $ cd Sensory-Journeys/web/config
@@ -74,11 +147,6 @@ script "install pear modules" do
   not_if "test -f /usr/share/php/Crypt/HMAC2.php"
 end
 
-
-# 
-# $ sudo -u postgres -i
-#   $ createdb -E UTF8 -O sensory paperwalking
-#   $ exit
 # 
 # Go into the Sensory-Journeys top level folder
 # $ cd /path/to/Sensory-Journeys
