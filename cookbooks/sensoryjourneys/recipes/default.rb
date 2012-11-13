@@ -147,20 +147,30 @@ script "install pear modules" do
   not_if "test -f /usr/share/php/Crypt/HMAC2.php"
 end
 
-# 
-# Go into the Sensory-Journeys top level folder
-# $ cd /path/to/Sensory-Journeys
-# 
-# # Add the tables to the paperwalking database
-# 
-# $ psql -U sensory -h localhost -f wp/site/doc/create.postgres paperwalking
-# 
-# Set up the rest of walking papers
-# 
-# $ git submodule init && git submodule update
-# $ cd wp/site && make
-# $ cd ../decoder && make
-# 
+# Unfortunately, this doesn't work. There's a stange change in behaviour in the
+# linker that prevents vlfeat from compiling. The version that we're using is
+# unmaintained, and upstream walking papers no longer uses it.
+# In vlfeat/Makefile, you need to move a flag around:
+# In the common unix configuration section:
+# C_LDFLAGS   += -L$(BINDIR) -l$(DLL_NAME)  <- add -lm to the end
+# In the linux-64 section:
+# LDFLAGS         += -lm -Wl,--rpath,\$$ORIGIN/ <- remove -lm from this line
+# It will then compile, and chef will then be happy.
+# The real fix is a whole-scale upgrade of the wp module in this project.
+script "set up walking papers" do
+  interpreter "bash"
+  cwd File.join(deploy_dir, "current")
+  user "sensory"
+  group "sensory"
+  code <<-EOH
+    set -e
+    git submodule init && git submodule update
+    cd wp/site && make
+    cd ../decoder && make
+  EOH
+  not_if "test -f #{File.join(deploy_dir, "current", 'bin/a64/test_stringop')}"
+end
+
 # Set up the walking papers configuration
 # 
 # $ cd ../site/lib
