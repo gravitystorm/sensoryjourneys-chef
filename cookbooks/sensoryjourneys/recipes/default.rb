@@ -167,10 +167,13 @@ script "set up walking papers" do
 end
 
 # Set up the walking papers configuration
-# 
-# $ cd ../site/lib
-# $ cp init.php.txt init.php
-# $ nano init.php (change dsn and final_destination)
+
+template "/var/www/sensory/current/wp/site/lib/init.php" do
+  source "init.php.txt"
+  owner "sensory"
+  group "sensory"
+  mode '0644'
+end
 
 # Increase the size of file uploads and POSTs in general
 template "/etc/php5/apache2/php.ini" do
@@ -188,6 +191,9 @@ package "python-psycopg2" do
   action :install
 end
 
-# cd /path/to/Sensory-Journeys/wp
-# cp example.dbconnect.py dbconnect.py
-# nano dbconnect.py # set the password
+template "/var/www/sensory/current/wp/dbconnect.py" do
+  source "example.dbconnect.py"
+  owner "sensory"
+  group "sensory"
+  mode '0644'
+end
