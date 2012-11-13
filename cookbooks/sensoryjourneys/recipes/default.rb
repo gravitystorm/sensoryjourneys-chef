@@ -114,8 +114,6 @@ deploy_revision deploy_dir do
   restart_command "touch tmp/restart.txt"
 end
 
-
-
 # Go into the project source code, and set up the database configuration
 # 
 # $ cd Sensory-Journeys/web/config
@@ -129,14 +127,11 @@ end
 # $ rake db:migrate
 #
 
-
-
 ### Walking papers
 
 %w( curl python-imaging python-numpy openjdk-6-jre-headless libapache2-mod-php5 php5-gd php5-pgsql php-pear).each do |p|
   package p
 end
-
 
 script "install pear modules" do
   interpreter "bash"
@@ -176,12 +171,13 @@ end
 # $ cd ../site/lib
 # $ cp init.php.txt init.php
 # $ nano init.php (change dsn and final_destination)
-# 
-# PHP limits the size of uploaded files and POST requests in general. We need to increase these dramatically given the size of scans
-# 
-# $ sudo nano /etc/php5/apache2/php.ini # find and change these two values
-#   upload_max_filesize = 25M
-#   post_max_size = 25M
+
+# Increase the size of file uploads and POSTs in general
+template "/etc/php5/apache2/php.ini" do
+  source "php.ini"
+  notifies :restart, "service[apache2]"
+end
+
 # 
 # ========= scans-compile.py ==========
 # 
