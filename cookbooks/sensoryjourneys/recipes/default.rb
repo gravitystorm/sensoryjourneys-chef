@@ -17,7 +17,7 @@ service "postgresql" do
   action :enable
 end
 
-%w( ruby1.8 rdoc1.8 ri1.8 ruby irb libxml2-dev ruby1.8-dev apache2-threaded-dev libmagick-dev build-essential libopenssl-ruby apache2 libxml-ruby git ).each do |p|
+%w( ruby1.8 rdoc1.8 ri1.8 ruby irb libxml2-dev ruby1.8-dev apache2-threaded-dev libmagick-dev libmagickwand-dev build-essential libopenssl-ruby apache2 libxml-ruby git ).each do |p|
   package p
 end
 
@@ -37,6 +37,11 @@ gem_package "pg" do
 end
 
 gem_package "libxml-ruby" do
+  action :install
+  gem_binary '/usr/bin/gem'
+end
+
+gem_package "rmagick" do
   action :install
   gem_binary '/usr/bin/gem'
 end
