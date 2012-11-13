@@ -114,6 +114,19 @@ deploy_revision deploy_dir do
   restart_command "touch tmp/restart.txt"
 end
 
+template "/etc/apache2/sites-available/sensory" do
+  source "apache.vhost.conf"
+  notifies :reload, "service[apache2]"
+end
+
+apache_site "default" do
+  enable false
+end
+
+apache_site "sensory" do
+  enable true
+end
+
 # Go into the project source code, and set up the database configuration
 # 
 # $ cd Sensory-Journeys/web/config
