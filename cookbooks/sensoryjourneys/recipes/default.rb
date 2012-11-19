@@ -116,7 +116,10 @@ deploy_revision deploy_dir do
   migration_command "rake db:migrate"
   environment "RAILS_ENV" => "production"
   action :deploy
-  restart_command "touch tmp/restart.txt"
+  restart_command "touch web/tmp/restart.txt"
+  create_dirs_before_symlink %w{web/tmp}
+  symlinks "system" => "web/public/system", "pids" => "web/tmp/pids", "log" => "web/log"
+  symlink_before_migrate "config/database.yml" => "web/config/database.yml"
 end
 
 template "/etc/apache2/sites-available/sensory" do
