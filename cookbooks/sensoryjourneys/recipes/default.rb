@@ -80,7 +80,7 @@ end
 deploy_dir = "/var/www/sensory"
 shared_dir = File.join(deploy_dir, "shared")
 
-[deploy_dir, File.join(shared_dir, "config"), File.join(shared_dir, "log")].each do |dir|
+[shared_dir, deploy_dir, File.join(shared_dir, "config"), File.join(shared_dir, "log")].each do |dir|
   directory dir do
     owner "sensory"
     group "sensory"
