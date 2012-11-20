@@ -4,6 +4,14 @@
 #
 # Copyright 2012, Gravitystorm Limited
 
+
+# TODO:
+# copy environment in to place, and (perhaps) sort out the cookie thing
+# copy the database.yml file into place
+# Python / PHP db connections via sockets, or set up postgres to trust
+# There's lots of stuff in the walking papers directory - from init.php to
+# the scans/ folder, that needs to be shared between deployments.
+
 ### The website
 
 
@@ -166,7 +174,7 @@ end
 # Unfortunately, this doesn't work. There's a stange change in behaviour in the
 # linker that prevents vlfeat from compiling. The version that we're using is
 # unmaintained, and upstream walking papers no longer uses it.
-# In vlfeat/Makefile, you need to move a flag around:
+# In wp/decoder/vlfeat/Makefile, you need to move a flag around:
 # In the common unix configuration section:
 # C_LDFLAGS   += -L$(BINDIR) -l$(DLL_NAME)  <- add -lm to the end
 # In the linux-64 section:
@@ -184,7 +192,7 @@ script "set up walking papers" do
     cd wp/site && make
     cd ../decoder && make
   EOH
-  not_if "test -f #{File.join(deploy_dir, "current", 'bin/a64/test_stringop')}"
+  not_if "test -f #{File.join(deploy_dir, "current", 'bin/a64/test_stringop')}" # correct path?
 end
 
 # Set up the walking papers configuration
